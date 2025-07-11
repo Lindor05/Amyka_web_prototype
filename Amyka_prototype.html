@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amyka Learning - Cours IA</title>
+<style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+    header { background-color: #4CAF50; color: white; padding: 1rem; text-align: center; }
+    /*nav { background-color: #f1f1f1; padding: 1rem; width: 200px; float: left; height: 100vh; box-sizing: border-box; overflow-y: auto; }
+    nav ul { list-style-type: none; padding: 0; }
+    nav li { margin-bottom: 1rem; }
+    nav a { text-decoration: none; color: #333; } */
+    main { margin-left: 220px; padding: 2rem; }
+    section { margin-bottom: 2rem; }
+    h2, h3 { color: #4CAF50; }
+    img, iframe { max-width: 100%; height: auto; margin-top: 1rem; }
+    .quiz { background-color: #f9f9f9; padding: 1rem; border: 1px solid #ddd; border-radius: 8px; margin-top: 1rem; }
+    #courseContent { margin-top: 2rem; }
+    #generateBtn, #saveBtn { background-color: #4CAF50; color: white; padding: 0.5rem 1rem; border: none; cursor: pointer; margin-top: 1rem; }
+    #generateBtn:hover, #saveBtn:hover { background-color: #45a049; }
+    #subjectInput { padding: 0.5rem; width: 60%; }
+    #savedCourses { margin-top: 2rem; background: #f9f9f9; padding: 1rem; border: 1px solid #ccc; }
+    /* Styles pour les sous-listes du menu collapsible */
+nav ul ul {
+list-style-type: circle;
+margin-top: 0.5rem;
+padding-left: 1rem;
+}
+
+/* Curseur pointeur sur les liens */
+nav li > a {
+cursor: pointer;
+}
+
+/* Style actif pour les liens sélectionnés */
+nav a.active {
+font-weight: bold;
+color: #4CAF50;
+}
+</style>
+</head>
+<body>
+<header>
+    <h1>Amyka Learning - Générateur de Cours IA</h1>
+</header>
+
+<nav>
+    <ul>
+    <li><a href="#">Accueil</a></li>
+    <li><a href="#courseContent">Cours généré</a></li>
+    <li><a href="#savedCourses">Cours sauvegardés</a></li>
+    </ul>
+</nav>
+
+<main>
+    <section>
+    <h2>Entrez un sujet de cours</h2>
+    <input type="text" id="subjectInput" placeholder="Ex: Introduction à la cybersécurité">
+    <button id="generateBtn">Générer le cours</button>
+    <button id="saveBtn" style="display:none;">Sauvegarder ce cours</button>
+    </section>
+
+    <section id="courseContent">
+    <!-- Le contenu généré sera injecté ici -->
+    </section>
+
+    <section id="savedCourses">
+    <h2>Cours sauvegardés</h2>
+    <div id="savedList"></div>
+    </section>
+</main>
+
+<script>
+    const btn = document.getElementById("generateBtn");
+    const saveBtn = document.getElementById("saveBtn");
+    const input = document.getElementById("subjectInput");
+    const courseContent = document.getElementById("courseContent");
+    const savedList = document.getElementById("savedList");
+
+    let lastGeneratedCourse = "";
+    let currentTitle = "";
+
+    btn.addEventListener("click", async () => {
+    const subject = input.value.trim();
+    if (!subject) return alert("Veuillez entrer un sujet.");
+
+    courseContent.innerHTML = "<p>Génération du cours en cours...</p>";
+    saveBtn.style.display = "none";
+
+    try {
+        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+            "Authorization": "Bearer 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", // Remplace ici par ta clé réelle
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            model: "mistralai/mistral-7b-instruct:free",
+            messages: [
+            {
+                role: "user",
+                content: `Tu es un tuteur IA. Génère un cours structuré en HTML avec <h2>, <h3>, <p>, <ul>, <li> sur : ${subject}. Inclure une introduction, des définitions, des exemples, et un quiz à la fin.`
+            }
+            ]
+        })
+        });
+
+        const data = await response.json();
+
+        if (!data.choices || !data.choices[0]) {
+        courseContent.innerHTML = `<p>Erreur : réponse vide ou invalide.</p>`;
+        console.error("Réponse API invalide :", data);
+        return;
+        }
+
+        const output = data.choices[0].message.content;
+        lastGeneratedCourse = output;
+        currentTitle = subject;
+
+        courseContent.innerHTML = `<h2>Cours sur : ${subject}</h2><p>${output.replace(/\\n/g, '<br>')}</p>`;
+        generateMenu(output);
+        saveBtn.style.display = "inline-block";
+    } catch (error) {
+        courseContent.innerHTML = "<p>Erreur lors de la génération du cours. Vérifiez votre connexion ou votre clé API.</p>";
+        console.error(error);
+    }
+    });
+
+    saveBtn.addEventListener("click", () => {
+    const saved = localStorage.getItem("amyka_courses");
+    const courses = saved ? JSON.parse(saved) : [];
+    courses.push({ title: currentTitle, content: lastGeneratedCourse });
+    localStorage.setItem("amyka_courses", JSON.stringify(courses));
+    alert("Cours sauvegardé !");
+    displaySavedCourses();
+    });
+
+    function displaySavedCourses() {
+    const saved = localStorage.getItem("amyka_courses");
+    const courses = saved ? JSON.parse(saved) : [];
+    savedList.innerHTML = courses.map((c, index) => `
+        <div style="margin-bottom: 1rem;">
+        <h3>${c.title}</h3>
+        <div>${c.content}</div>
+        </div>
+    `).join("");
+    }
+
+
+function generateMenu(html) {
+const tempDiv = document.createElement("div");
+tempDiv.innerHTML = html;
+
+const headers = [...tempDiv.querySelectorAll("h2, h3")];
+const menu = document.querySelector("nav ul");
+
+  // Réinitialiser le menu
+menu.innerHTML = `
+    <li><a href="#">Accueil</a></li>
+    <li><a href="#courseContent">Cours généré</a></li>
+    <li><a href="#savedCourses">Cours sauvegardés</a></li>
+`;
+
+let currentH2Group = null;
+
+headers.forEach((el, i) => {
+    const id = `section-${i}`;
+    el.id = id;
+
+    if (el.tagName === "H2") {
+    const li = document.createElement("li");
+    const a = document.createElement("a");
+    a.href = `#${id}`;
+    a.textContent = el.textContent;
+    a.style.fontWeight = "bold";
+
+      // Conteneur des sous-éléments
+    const sublist = document.createElement("ul");
+      sublist.style.display = "none"; // Collapsé par défaut
+    sublist.style.paddingLeft = "1rem";
+
+    a.addEventListener("click", (e) => {
+        e.preventDefault();
+        document.getElementById(id).scrollIntoView({ behavior: "smooth" });
+        sublist.style.display = sublist.style.display === "none" ? "block" : "none";
+    });
+
+    li.appendChild(a);
+    li.appendChild(sublist);
+    menu.appendChild(li);
+
+    currentH2Group = sublist;
+    } else if (el.tagName === "H3" && currentH2Group) {
+    const subLi = document.createElement("li");
+    const subA = document.createElement("a");
+    subA.href = `#${id}`;
+    subA.textContent = el.textContent;
+    subA.style.fontSize = "0.9em";
+
+    subA.addEventListener("click", (e) => {
+        e.preventDefault();
+        document.getElementById(id).scrollIntoView({ behavior: "smooth" });
+    });
+
+    subLi.appendChild(subA);
+    currentH2Group.appendChild(subLi);
+    }
+});
+}
+
+    displaySavedCourses();
+</script>
+
+
+
+</body>
+</html>
