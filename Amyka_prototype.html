@@ -189,7 +189,10 @@
         body: JSON.stringify({
             model: "mistralai/mistral-7b-instruct:free",
             messages: [
-            { role: "user", content: `Tu es un tuteur IA. Génère un cours structuré en HTML avec <h2>, <h3>, <p>, <ul>, <li> sur : ${input}. Inclure une introduction, des définitions, des exemples, et un quiz à la fin.` }
+            {
+                role: "user",
+                content: `Tu es un tuteur IA. Réponds uniquement en HTML bien formaté (sans bloc de code Markdown). Génére un cours structuré avec <h2>, <h3>, <p>, <ul>, <li> sur : ${input}. Inclure une introduction, des définitions, des exemples, et un quiz à la fin. Ne mets aucun commentaire, ni balises <pre>, ni blocs de code comme \`\`\`.`
+            }
             ]
         })
         });
@@ -197,7 +200,12 @@
         const data = await res.json();
         const output = data.choices?.[0]?.message?.content;
         if (!output) throw new Error("No output from API");
-        responseBox.innerHTML = output;
+
+        // Nettoyer le contenu de commentaires ou balises inutiles
+        const cleaned = output.replace(/```html|```|<!--.*?-->/gs, '').trim();
+
+        // Affichage sécurisé du HTML
+        responseBox.innerHTML = DOMPurify.sanitize(cleaned);
     } catch (err) {
         console.error(err);
         responseBox.innerHTML = '<p style="color:red">Erreur lors de la génération du cours.</p>';
