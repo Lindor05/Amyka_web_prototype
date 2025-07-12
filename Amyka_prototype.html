@@ -1,218 +1,208 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Amyka Learning - Cours IA</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Amyka Learning</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-    header { background-color: #4CAF50; color: white; padding: 1rem; text-align: center; }
-    /*nav { background-color: #f1f1f1; padding: 1rem; width: 200px; float: left; height: 100vh; box-sizing: border-box; overflow-y: auto; }
-    nav ul { list-style-type: none; padding: 0; }
-    nav li { margin-bottom: 1rem; }
-    nav a { text-decoration: none; color: #333; } */
-    main { margin-left: 220px; padding: 2rem; }
-    section { margin-bottom: 2rem; }
-    h2, h3 { color: #4CAF50; }
-    img, iframe { max-width: 100%; height: auto; margin-top: 1rem; }
-    .quiz { background-color: #f9f9f9; padding: 1rem; border: 1px solid #ddd; border-radius: 8px; margin-top: 1rem; }
-    #courseContent { margin-top: 2rem; }
-    #generateBtn, #saveBtn { background-color: #4CAF50; color: white; padding: 0.5rem 1rem; border: none; cursor: pointer; margin-top: 1rem; }
-    #generateBtn:hover, #saveBtn:hover { background-color: #45a049; }
-    #subjectInput { padding: 0.5rem; width: 60%; }
-    #savedCourses { margin-top: 2rem; background: #f9f9f9; padding: 1rem; border: 1px solid #ccc; }
-    /* Styles pour les sous-listes du menu collapsible */
-nav ul ul {
-list-style-type: circle;
-margin-top: 0.5rem;
-padding-left: 1rem;
-}
-
-/* Curseur pointeur sur les liens */
-nav li > a {
-cursor: pointer;
-}
-
-/* Style actif pour les liens sélectionnés */
-nav a.active {
-font-weight: bold;
-color: #4CAF50;
-}
+    body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    background: linear-gradient(to bottom right, #f8f8fc, #eceafd);
+    color: #222;
+    }
+    aside {
+    width: 280px;
+    background: linear-gradient(to bottom, #121212, #1e1e1e);
+    color: white;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    box-sizing: border-box;
+    }
+    .logo {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 2rem;
+    }
+    .search-box input {
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    margin-bottom: 1rem;
+    }
+    .section-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 1rem 0 0.5rem;
+    color: #aaa;
+    }
+    .menu-item {
+    background: #2b2b2b;
+    margin-bottom: 0.5rem;
+    padding: 0.7rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    }
+    .menu-item:hover {
+    background: #3a3a3a;
+    }
+    .main {
+    flex: 1;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    }
+    .logo-main {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #7b4eff;
+    margin-bottom: 0.5rem;
+    }
+    .subtitle {
+    font-size: 1.2rem;
+    color: #444;
+    margin-bottom: 2rem;
+    }
+    .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    max-width: 800px;
+    width: 100%;
+    }
+    .card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    text-align: center;
+    transition: transform 0.2s;
+    cursor: pointer;
+    }
+    .card:hover {
+    transform: translateY(-5px);
+    }
+    .input-box {
+    position: fixed;
+    bottom: 1rem;
+    left: 300px;
+    right: 1rem;
+    display: flex;
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    padding: 0.5rem 1rem;
+    align-items: center;
+    }
+    .input-box input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 0.7rem;
+    font-size: 1rem;
+    }
+    .input-box button {
+    background: #7b4eff;
+    border: none;
+    color: white;
+    padding: 0.7rem 1rem;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: bold;
+    }
+    .response-box {
+    margin-top: 2rem;
+    max-width: 800px;
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
 </style>
 </head>
 <body>
-<header>
-    <h1>Amyka Learning - Générateur de Cours IA</h1>
-</header>
-
-<nav>
-    <ul>
-    <li><a href="#">Accueil</a></li>
-    <li><a href="#courseContent">Cours généré</a></li>
-    <li><a href="#savedCourses">Cours sauvegardés</a></li>
-    </ul>
-</nav>
-
-<main>
-    <section>
-    <h2>Entrez un sujet de cours</h2>
-    <input type="text" id="subjectInput" placeholder="Ex: Introduction à la cybersécurité">
-    <button id="generateBtn">Générer le cours</button>
-    <button id="saveBtn" style="display:none;">Sauvegarder ce cours</button>
-    </section>
-
-    <section id="courseContent">
-    <!-- Le contenu généré sera injecté ici -->
-    </section>
-
-    <section id="savedCourses">
-    <h2>Cours sauvegardés</h2>
-    <div id="savedList"></div>
-    </section>
-</main>
-
+<aside>
+    <div class="logo">🎓 Amyka</div>
+    <div class="search-box">
+    <input type="text" placeholder="Search" />
+</div>
+<div class="section-title">Category</div>
+<div class="menu-item">📁 AI Research</div>
+<div class="menu-item">📁 Mathematic</div>
+<div class="menu-item">📁 History</div>
+<div class="menu-item">📁 English</div>
+<div class="section-title">Recent Chats</div>
+<div class="menu-item">💬 How can I increase...</div>
+<div class="menu-item">💬 What's the best appro...</div>
+<div style="margin-top:auto;">
+    <div class="menu-item">⚙️ User Profile</div>
+</div>
+</aside>
+<div class="main">
+<div class="logo-main">Amyka Learning</div>
+<div class="subtitle">How can I <strong style="color: #7b4eff;">assist</strong> you today?</div>
+<div class="card-grid">
+    <div class="card" onclick="generateCourse('Study guide')">Step by step<br><strong>Study guide</strong></div>
+    <div class="card" onclick="generateCourse('Homework help')">Homework<br><strong>Help</strong></div>
+    <div class="card" onclick="generateCourse('Study roadmap')">Study<br><strong>Roadmap</strong></div>
+    <div class="card" onclick="generateCourse('Exam simulator')">Exam<br><strong>Simulator</strong></div>
+</div>
+<div id="response" class="response-box"></div>
+</div>
+<div class="input-box">
+<input type="text" id="promptInput" placeholder="Type your course topic here" />
+<button onclick="sendPrompt()">&rarr;</button>
+</div>
 <script>
-    const btn = document.getElementById("generateBtn");
-    const saveBtn = document.getElementById("saveBtn");
-    const input = document.getElementById("subjectInput");
-    const courseContent = document.getElementById("courseContent");
-    const savedList = document.getElementById("savedList");
+    async function generateCourse(topic) {
+    document.getElementById('promptInput').value = topic;
+    await sendPrompt();
+    }
 
-    let lastGeneratedCourse = "";
-    let currentTitle = "";
+    async function sendPrompt() {
+    const input = document.getElementById('promptInput').value.trim();
+    if (!input) return;
 
-    btn.addEventListener("click", async () => {
-    const subject = input.value.trim();
-    if (!subject) return alert("Veuillez entrer un sujet.");
-
-    courseContent.innerHTML = "<p>Génération du cours en cours...</p>";
-    saveBtn.style.display = "none";
+    const responseBox = document.getElementById('response');
+    responseBox.innerHTML = '<p>Generating course content...</p>';
 
     try {
-        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",
         headers: {
-            "Authorization": "Bearer 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", // Remplace ici par ta clé réelle
+            "Authorization": "Bearer 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",
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
             model: "mistralai/mistral-7b-instruct:free",
             messages: [
-            {
-                role: "user",
-                content: `Tu es un tuteur IA. Génère un cours structuré en HTML avec <h2>, <h3>, <p>, <ul>, <li> sur : ${subject}. Inclure une introduction, des définitions, des exemples, et un quiz à la fin.`
-            }
+            { role: "user", content: `Tu es un tuteur IA. Génère un cours structuré en HTML avec <h2>, <h3>, <p>, <ul>, <li> sur : ${input}. Inclure une introduction, des définitions, des exemples, et un quiz à la fin.` }
             ]
         })
         });
 
-        const data = await response.json();
-
-        if (!data.choices || !data.choices[0]) {
-        courseContent.innerHTML = `<p>Erreur : réponse vide ou invalide.</p>`;
-        console.error("Réponse API invalide :", data);
-        return;
-        }
-
-        const output = data.choices[0].message.content;
-        lastGeneratedCourse = output;
-        currentTitle = subject;
-
-        courseContent.innerHTML = `<h2>Cours sur : ${subject}</h2><p>${output.replace(/\\n/g, '<br>')}</p>`;
-        generateMenu(output);
-        saveBtn.style.display = "inline-block";
-    } catch (error) {
-        courseContent.innerHTML = "<p>Erreur lors de la génération du cours. Vérifiez votre connexion ou votre clé API.</p>";
-        console.error(error);
+        const data = await res.json();
+        const output = data.choices?.[0]?.message?.content;
+        if (!output) throw new Error("No output from API");
+        responseBox.innerHTML = output;
+    } catch (err) {
+        console.error(err);
+        responseBox.innerHTML = '<p style="color:red">Erreur lors de la génération du cours.</p>';
     }
-    });
-
-    saveBtn.addEventListener("click", () => {
-    const saved = localStorage.getItem("amyka_courses");
-    const courses = saved ? JSON.parse(saved) : [];
-    courses.push({ title: currentTitle, content: lastGeneratedCourse });
-    localStorage.setItem("amyka_courses", JSON.stringify(courses));
-    alert("Cours sauvegardé !");
-    displaySavedCourses();
-    });
-
-    function displaySavedCourses() {
-    const saved = localStorage.getItem("amyka_courses");
-    const courses = saved ? JSON.parse(saved) : [];
-    savedList.innerHTML = courses.map((c, index) => `
-        <div style="margin-bottom: 1rem;">
-        <h3>${c.title}</h3>
-        <div>${c.content}</div>
-        </div>
-    `).join("");
     }
-
-
-function generateMenu(html) {
-const tempDiv = document.createElement("div");
-tempDiv.innerHTML = html;
-
-const headers = [...tempDiv.querySelectorAll("h2, h3")];
-const menu = document.querySelector("nav ul");
-
-  // Réinitialiser le menu
-menu.innerHTML = `
-    <li><a href="#">Accueil</a></li>
-    <li><a href="#courseContent">Cours généré</a></li>
-    <li><a href="#savedCourses">Cours sauvegardés</a></li>
-`;
-
-let currentH2Group = null;
-
-headers.forEach((el, i) => {
-    const id = `section-${i}`;
-    el.id = id;
-
-    if (el.tagName === "H2") {
-    const li = document.createElement("li");
-    const a = document.createElement("a");
-    a.href = `#${id}`;
-    a.textContent = el.textContent;
-    a.style.fontWeight = "bold";
-
-      // Conteneur des sous-éléments
-    const sublist = document.createElement("ul");
-      sublist.style.display = "none"; // Collapsé par défaut
-    sublist.style.paddingLeft = "1rem";
-
-    a.addEventListener("click", (e) => {
-        e.preventDefault();
-        document.getElementById(id).scrollIntoView({ behavior: "smooth" });
-        sublist.style.display = sublist.style.display === "none" ? "block" : "none";
-    });
-
-    li.appendChild(a);
-    li.appendChild(sublist);
-    menu.appendChild(li);
-
-    currentH2Group = sublist;
-    } else if (el.tagName === "H3" && currentH2Group) {
-    const subLi = document.createElement("li");
-    const subA = document.createElement("a");
-    subA.href = `#${id}`;
-    subA.textContent = el.textContent;
-    subA.style.fontSize = "0.9em";
-
-    subA.addEventListener("click", (e) => {
-        e.preventDefault();
-        document.getElementById(id).scrollIntoView({ behavior: "smooth" });
-    });
-
-    subLi.appendChild(subA);
-    currentH2Group.appendChild(subLi);
-    }
-});
-}
-
-    displaySavedCourses();
 </script>
-
-
-
 </body>
 </html>
